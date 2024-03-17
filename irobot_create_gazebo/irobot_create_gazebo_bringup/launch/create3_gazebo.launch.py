@@ -88,12 +88,8 @@ def generate_launch_description():
     gz_model_uri = SetEnvironmentVariable(name='GAZEBO_MODEL_URI', value=[''])
 
     # Paths
-    create3_nodes_launch_file = PathJoinSubstitution(
-        [pkg_create3_common_bringup, 'launch', 'create3_nodes.launch.py'])
     dock_description_launch_file = PathJoinSubstitution(
         [pkg_create3_common_bringup, 'launch', 'dock_description.launch.py'])
-    robot_description_launch_file = PathJoinSubstitution(
-        [pkg_create3_common_bringup, 'launch', 'robot_description.launch.py'])
     rviz2_launch_file = PathJoinSubstitution(
         [pkg_create3_common_bringup, 'launch', 'rviz2.launch.py'])
 
