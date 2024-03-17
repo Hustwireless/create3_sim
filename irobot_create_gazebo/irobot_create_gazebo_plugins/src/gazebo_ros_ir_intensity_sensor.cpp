@@ -26,6 +26,8 @@ void GazeboRosIrIntensitySensor::Load(gazebo::sensors::SensorPtr sensor, sdf::El
 
   // Configure the plugin from the SDF file
   ros_node_ = gazebo_ros::Node::Get(sdf);
+  RCLCPP_FATAL_STREAM(ros_node_->get_logger(), "sdf info: " << sdf->ToString(""));
+  RCLCPP_FATAL_STREAM(ros_node_->get_logger(), "namespace: " << ros_node_->get_namespace() << " name: " << ros_node_->get_name());
 
   // Initialize ROS publishers
   pub_ = ros_node_->create_publisher<irobot_create_msgs::msg::IrIntensity>(

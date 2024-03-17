@@ -1,11 +1,25 @@
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, OpaqueFunction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, PythonExpression
 
 from launch_ros.actions import Node
+
+def launch_setup(context, *args, **kwargs):
+    namespace = LaunchConfiguration("namespace")
+    robot_name = LaunchConfiguration("robot_name")
+    robot_description = LaunchConfiguration("robot_description")
+    print(f"namespace: {namespace.perform(context)}")
+    print(f"namespace: {namespace.perform(context)}")
+    print(f"namespace: {namespace.perform(context)}")
+    print(f"robot_name: {robot_name.perform(context)}")
+    print(f"robot_name: {robot_name.perform(context)}")
+    print(f"robot_name: {robot_name.perform(context)}")
+    print(f"robot_description: {robot_description.perform(context)}")
+    print(f"robot_description: {robot_description.perform(context)}")
+    print(f"robot_description: {robot_description.perform(context)}")
 
 ARGUMENTS = [
     DeclareLaunchArgument('gazebo', default_value='classic',
@@ -30,17 +44,13 @@ for pose_element in ['x', 'y', 'z', 'yaw']:
 
 def generate_launch_description():
 
-    pkg_create3_common_bringup = get_package_share_directory(
-        'irobot_create_common_bringup')
     pkg_irobot_create_common_bringup = get_package_share_directory(
         'irobot_create_common_bringup')
 
     robot_description_launch = PathJoinSubstitution(
-        [pkg_create3_common_bringup, 'launch', 'robot_description.launch.py'])
+        [pkg_irobot_create_common_bringup, 'launch', 'robot_description.launch.py'])
     create3_nodes_launch = PathJoinSubstitution(
         [pkg_irobot_create_common_bringup, 'launch', 'create3_nodes.launch.py'])
-    robot_description_launch = PathJoinSubstitution(
-        [pkg_irobot_create_common_bringup, 'launch', 'robot_description.launch.py'])
 
     # Launch configurations
     x, y, z = LaunchConfiguration('x'), LaunchConfiguration('y'), LaunchConfiguration('z')
@@ -54,7 +64,7 @@ def generate_launch_description():
     spawn_robot = Node(
         package='gazebo_ros',
         executable='spawn_entity.py',
-        name='spawn_create3',
+        name='spawn_robot',
         arguments=['-entity', robot_name,
                    '-topic', robot_description,
                    '-x', x,
@@ -76,6 +86,7 @@ def generate_launch_description():
 
     # Create launch description and add actions
     ld = LaunchDescription(ARGUMENTS)
+    ld.add_action(OpaqueFunction(function=launch_setup))
     ld.add_action(spawn_robot)
     ld.add_action(robot_description_launch)
     # Include Create 3 nodes

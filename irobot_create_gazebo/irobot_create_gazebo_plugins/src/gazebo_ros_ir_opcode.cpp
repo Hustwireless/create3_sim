@@ -20,6 +20,8 @@ void GazeboRosIrOpcode::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sd
   // Pass SDF parameters so common options like namespace and remapping
   // can be handled.
   ros_node_ = gazebo_ros::Node::Get(sdf);
+  RCLCPP_FATAL_STREAM(ros_node_->get_logger(), "sdf info: " << sdf->ToString(""));
+  RCLCPP_FATAL_STREAM(ros_node_->get_logger(), "namespace: " << ros_node_->get_namespace() << " name: " << ros_node_->get_name());
 
   world_ = model->GetWorld();
   GZ_ASSERT(world_, "World pointer is invalid!");

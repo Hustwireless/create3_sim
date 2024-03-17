@@ -5,10 +5,18 @@
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import Command, PathJoinSubstitution
 from launch.substitutions.launch_configuration import LaunchConfiguration
 from launch_ros.actions import Node
+
+# print debug
+def launch_setup(context, *args, **kwargs):
+    namespace = LaunchConfiguration("namespace")
+    print(f"in rd namespace: {namespace.perform(context)}")
+    print(f"in rd namespace: {namespace.perform(context)}")
+    print(f"in rd namespace: {namespace.perform(context)}")
+
 
 ARGUMENTS = [
     DeclareLaunchArgument('gazebo', default_value='classic',
@@ -41,13 +49,13 @@ def generate_launch_description():
         remappings=remappings,
         parameters=[
             {'use_sim_time': True},
+            {'frame_prefix': frame_prefix},
             {'robot_description':
              Command(
                   ['xacro', ' ', xacro_file, ' ',
                    'gazebo:=', gazebo_simulator, ' ',
                    'visualize_rays:=', visualize_rays, ' ',
                    'namespace:=', namespace, ' '])},
-            {'frame_prefix': frame_prefix},
         ],
     )
 
@@ -60,19 +68,19 @@ def generate_launch_description():
         remappings=remappings,
         parameters=[
             {'use_sim_time': True},
+            {'frame_prefix': frame_prefix},
             {'robot_description':
              Command(
                   ['xacro', ' ', xacro_file, ' ',
                    'gazebo:=', gazebo_simulator, ' ',
                    'visualize_rays:=', visualize_rays, ' ',
                    'namespace:=', namespace, ' '])},
-            {'frame_prefix': frame_prefix},
         ],
     )
 
     # Define LaunchDescription variable
     ld = LaunchDescription(ARGUMENTS)
-
+    ld.add_action(OpaqueFunction(function=launch_setup))
     # Add nodes to LaunchDescription
     ld.add_action(joint_state_publisher)
     ld.add_action(robot_state_publisher)
