@@ -18,6 +18,9 @@ void GazeboRosBumper::Load(gazebo::sensors::SensorPtr sensor, sdf::ElementPtr sd
   bumper_pub_ = ros_node_->create_publisher<irobot_create_msgs::msg::HazardDetection>(
     "~/out", rclcpp::SensorDataQoS().reliable());
 
+  robot_name_ = ros_node_->get_namespace();
+  robot_name_ = robot_name_.substr(1);
+
   // Listen to the update event.
   update_connection_ = bumper_->ConnectUpdated(std::bind(&GazeboRosBumper::OnUpdate, this));
 
@@ -81,7 +84,13 @@ void GazeboRosBumper::GzPoseCallback(ConstPosesStampedPtr & msg)
   // Find in the message's vector a pose element corresponding to the mobile base's absolute pose
   // identified under the "create3" name.
   const auto i = std::find_if(
-    poses.begin(), poses.end(), [](const auto & pose) -> bool {return pose.name() == "create3";});
+    poses.begin(), poses.end(), 
+    [this](const auto & pose) -> bool {
+      // RCLCPP_WARN_STREAM(this->ros_node_->get_logger(), "pose name: " << pose.name() << " " << robot_name_); 
+      return pose.name() == robot_name_;
+      }
+    );
+  
   // If not matches are found, return immediately.
   if (i == poses.end()) {
     return;
