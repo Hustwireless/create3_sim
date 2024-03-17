@@ -15,6 +15,7 @@ namespace irobot_create_nodes
 RobotState::RobotState(const rclcpp::NodeOptions & options)
 : rclcpp::Node("robot_state", options)
 {
+
   transitioned_to_docked_ = this->now();
   transitioned_to_undocked_ = transitioned_to_docked_;
   transitioned_to_stopped_ = transitioned_to_docked_;
