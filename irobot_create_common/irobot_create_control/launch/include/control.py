@@ -20,6 +20,7 @@ def generate_launch_description():
     namespace = LaunchConfiguration('namespace')
     namespaced_node_name = [namespace, '/controller_manager']
     pkg_create3_control = get_package_share_directory('irobot_create_control')
+    # remappings = [([namespace, '/controller_manager/tf'], [namespace, '/tf']), ([namespace, '/controller_manager/odom'], [namespace, '/odom']),]
 
     config_file_name = PythonExpression(expression=["'", namespace, "'", " + '.yaml'"])
     control_params_file = PathJoinSubstitution(
@@ -32,6 +33,7 @@ def generate_launch_description():
         namespace=namespace,
         arguments=['diffdrive_controller', '-c', namespaced_node_name],
         output='screen',
+        # remappings=remappings,
     )
 
     joint_state_broadcaster_spawner = Node(
@@ -50,7 +52,7 @@ def generate_launch_description():
         )
     )
 
-    ld = LaunchDescription()
+    ld = LaunchDescription(ARGUMENTS)
 
     ld.add_action(joint_state_broadcaster_spawner)
     ld.add_action(diffdrive_controller_callback)
