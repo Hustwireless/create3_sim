@@ -26,6 +26,8 @@ def generate_launch_description():
     pkg_create3_common_bringup = get_package_share_directory('irobot_create_common_bringup')
     pkg_create3_control = get_package_share_directory('irobot_create_control')
     namespace = LaunchConfiguration('namespace')
+    remappings = [('/tf', 'tf'),
+                  ('/tf_static', 'tf_static')]
 
     # Paths
     control_launch_file = PathJoinSubstitution(
@@ -61,6 +63,7 @@ def generate_launch_description():
         parameters=[hazards_params_yaml_file,
                     {'use_sim_time': True}],
         output='screen',
+        remappings=remappings,
     )
 
     # Publish IR intensity vector
@@ -72,6 +75,7 @@ def generate_launch_description():
         parameters=[ir_intensity_params_yaml_file,
                     {'use_sim_time': True}],
         output='screen',
+        remappings=remappings,
     )
 
     # Motion Control
@@ -82,6 +86,7 @@ def generate_launch_description():
         executable='motion_control',
         parameters=[{'use_sim_time': True}],
         output='screen',
+        remappings=remappings,
     )
 
     # Publish wheel status
@@ -93,6 +98,7 @@ def generate_launch_description():
         parameters=[wheel_status_params_yaml_file,
                     {'use_sim_time': True}],
         output='screen',
+        remappings=remappings,
     )
 
     # Publish mock topics
@@ -104,6 +110,7 @@ def generate_launch_description():
         parameters=[mock_params_yaml_file,
                     {'use_sim_time': True}],
         output='screen',
+        remappings=remappings,
     )
 
     # Publish robot state
@@ -115,6 +122,7 @@ def generate_launch_description():
         parameters=[robot_state_yaml_file,
                     {'use_sim_time': True}],
         output='screen',
+        remappings=remappings,
     )
 
     # Publish kidnap estimator
@@ -126,6 +134,7 @@ def generate_launch_description():
         parameters=[kidnap_estimator_yaml_file,
                     {'use_sim_time': True}],
         output='screen',
+        remappings=remappings,
     )
 
     # UI topics / actions
@@ -138,6 +147,7 @@ def generate_launch_description():
                     {'use_sim_time': True},
                     {'gazebo': LaunchConfiguration('gazebo')}],
         output='screen',
+        remappings=remappings,
     )
 
     # Define LaunchDescription variable

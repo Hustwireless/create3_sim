@@ -41,6 +41,9 @@ def generate_launch_description():
 
     gazebo_simulator = LaunchConfiguration('gazebo')
     frame_prefix = [namespace, '/']
+    remappings = [('/tf', 'tf'),
+                  ('/tf_static', 'tf_static'),
+                  ('robot_description', 'standard_dock_description')]
 
     state_publisher = Node(
         package='robot_state_publisher',
@@ -58,9 +61,7 @@ def generate_launch_description():
                  'namespace:=', namespace, ' ',])},
             {'frame_prefix': frame_prefix},
         ],
-        remappings=[
-            ('robot_description', 'standard_dock_description'),
-        ],
+        remappings=remappings,
     )
 
     tf_odom_std_dock_link_publisher = Node(
@@ -74,6 +75,7 @@ def generate_launch_description():
                    yaw, '0', '0',
                    [namespace, '/odom'], [namespace, '/std_dock_link']],
         output='screen',
+        remappings=remappings,
     )
 
     # Define LaunchDescription variable
