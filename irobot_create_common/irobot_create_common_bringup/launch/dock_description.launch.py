@@ -13,7 +13,9 @@ from launch_ros.actions import Node
 ARGUMENTS = [
     DeclareLaunchArgument('gazebo', default_value='classic',
                           choices=['classic', 'ignition'],
-                          description='Which gazebo simulation to use')
+                          description='Which gazebo simulation to use'),
+    DeclareLaunchArgument('namespace', default_value='',
+                          description='Create3 namespace')
 ]
 for pose_element in ['x', 'y', 'z', 'yaw']:
     ARGUMENTS.append(DeclareLaunchArgument(f'{pose_element}', default_value='0.0',
@@ -35,21 +37,26 @@ def generate_launch_description():
     x, y, z = LaunchConfiguration('x'), LaunchConfiguration('y'), LaunchConfiguration('z')
     yaw = LaunchConfiguration('yaw')
     visualize_rays = LaunchConfiguration('visualize_rays')
+    namespace = LaunchConfiguration('namespace')
 
     gazebo_simulator = LaunchConfiguration('gazebo')
+    frame_prefix = [namespace, '/']
 
     state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
         name='dock_state_publisher',
         output='screen',
+        namespace=namespace,
         parameters=[
             {'use_sim_time': True},
             {'robot_description':
              Command(
                 ['xacro', ' ', dock_xacro_file, ' ',
                  'gazebo:=', gazebo_simulator, ' ',
-                 'visualize_rays:=', visualize_rays])},
+                 'visualize_rays:=', visualize_rays, ' ',
+                 'namespace:=', namespace, ' ',])},
+            {'frame_prefix': frame_prefix},
         ],
         remappings=[
             ('robot_description', 'standard_dock_description'),
@@ -60,11 +67,12 @@ def generate_launch_description():
         package='tf2_ros',
         executable='static_transform_publisher',
         name='tf_odom_std_dock_link_publisher',
+        namespace=namespace,
         arguments=[x, y, z,
                    # According to documentation (http://wiki.ros.org/tf2_ros):
                    # the order is yaw, pitch, roll
                    yaw, '0', '0',
-                   'odom', 'std_dock_link'],
+                   [namespace, '/odom'], [namespace, '/std_dock_link']],
         output='screen',
     )
 

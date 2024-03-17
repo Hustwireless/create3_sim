@@ -14,7 +14,9 @@ from launch_ros.actions import Node
 ARGUMENTS = [
     DeclareLaunchArgument('gazebo', default_value='classic',
                           choices=['classic', 'ignition'],
-                          description='Which gazebo simulator to use')
+                          description='Which gazebo simulator to use'),
+    DeclareLaunchArgument('namespace', default_value='',
+                          description='Robot namespace')
 ]
 
 
@@ -23,6 +25,7 @@ def generate_launch_description():
     # Directories
     pkg_create3_common_bringup = get_package_share_directory('irobot_create_common_bringup')
     pkg_create3_control = get_package_share_directory('irobot_create_control')
+    namespace = LaunchConfiguration('namespace')
 
     # Paths
     control_launch_file = PathJoinSubstitution(
@@ -44,13 +47,16 @@ def generate_launch_description():
 
     # Includes
     diffdrive_controller = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([control_launch_file])
+        PythonLaunchDescriptionSource([control_launch_file]),
+        launch_arguments=[('namespace', LaunchConfiguration('namespace'))]
+
     )
 
     # Publish hazards vector
     hazards_vector_node = Node(
         package='irobot_create_nodes',
         name='hazards_vector_publisher',
+        namespace=namespace,
         executable='hazards_vector_publisher',
         parameters=[hazards_params_yaml_file,
                     {'use_sim_time': True}],
@@ -61,6 +67,7 @@ def generate_launch_description():
     ir_intensity_vector_node = Node(
         package='irobot_create_nodes',
         name='ir_intensity_vector_publisher',
+        namespace=namespace,
         executable='ir_intensity_vector_publisher',
         parameters=[ir_intensity_params_yaml_file,
                     {'use_sim_time': True}],
@@ -71,6 +78,7 @@ def generate_launch_description():
     motion_control_node = Node(
         package='irobot_create_nodes',
         name='motion_control',
+        namespace=namespace,
         executable='motion_control',
         parameters=[{'use_sim_time': True}],
         output='screen',
@@ -80,6 +88,7 @@ def generate_launch_description():
     wheel_status_node = Node(
         package='irobot_create_nodes',
         name='wheel_status_publisher',
+        namespace=namespace,
         executable='wheel_status_publisher',
         parameters=[wheel_status_params_yaml_file,
                     {'use_sim_time': True}],
@@ -90,6 +99,7 @@ def generate_launch_description():
     mock_topics_node = Node(
         package='irobot_create_nodes',
         name='mock_publisher',
+        namespace=namespace,
         executable='mock_publisher',
         parameters=[mock_params_yaml_file,
                     {'use_sim_time': True}],
@@ -100,6 +110,7 @@ def generate_launch_description():
     robot_state_node = Node(
         package='irobot_create_nodes',
         name='robot_state',
+        namespace=namespace,
         executable='robot_state',
         parameters=[robot_state_yaml_file,
                     {'use_sim_time': True}],
@@ -110,6 +121,7 @@ def generate_launch_description():
     kidnap_estimator_node = Node(
         package='irobot_create_nodes',
         name='kidnap_estimator_publisher',
+        namespace=namespace,
         executable='kidnap_estimator_publisher',
         parameters=[kidnap_estimator_yaml_file,
                     {'use_sim_time': True}],
@@ -120,6 +132,7 @@ def generate_launch_description():
     ui_mgr_node = Node(
         package='irobot_create_nodes',
         name='ui_mgr',
+        namespace=namespace,
         executable='ui_mgr',
         parameters=[ui_mgr_params_yaml_file,
                     {'use_sim_time': True},
