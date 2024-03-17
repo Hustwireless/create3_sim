@@ -1,5 +1,7 @@
 <?xml version="1.0" ?>
 <robot name="create3" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:arg name="namespace" default=""/>
+
   <xacro:include filename="$(find irobot_create_description)/urdf/bumper.urdf.xacro" />
   <xacro:include filename="$(find irobot_create_description)/urdf/button.urdf.xacro" />
   <xacro:include filename="$(find irobot_create_description)/urdf/caster.urdf.xacro" />
@@ -55,6 +57,7 @@
   <xacro:property name="dock_model_name" value="standard_dock"/>
   <xacro:property name="emitter_link_name" value="halo_link"/>
   <xacro:arg name="visualize_rays" default="false"/>
+  
   <!-- Create 3 base definition-->
   <link name="base_link">
     <visual>
@@ -116,7 +119,10 @@
   <xacro:if value="${'$(arg gazebo)' == 'classic'}">
     <gazebo>
       <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
-        <parameters> $(find irobot_create_control)/config/control.yaml </parameters>
+        <parameters> $(find irobot_create_control)/config/$(arg namespace).yaml </parameters>
+        <ros>
+          <namespace>$(arg namespace)</namespace>
+        </ros>
       </plugin>
     </gazebo>
   </xacro:if>
@@ -235,7 +241,7 @@
     <gazebo>
       <plugin name="gazebo_ros_p3d_robot" filename="libgazebo_ros_p3d.so">
         <ros>
-          <namespace>/</namespace>
+          <namespace>$(arg namespace)</namespace>
           <remapping>odom:=sim_ground_truth_pose</remapping>
         </ros>
         <body_name>base_link</body_name>
@@ -251,7 +257,7 @@
     <gazebo>
       <plugin name="dock_status_publisher" filename="libgazebo_ros_create_docking_status.so">
         <ros>
-          <namespace>/</namespace>
+          <namespace>$(arg namespace)</namespace>
           <remapping>~/out:=dock</remapping>
         </ros>
         <update_rate>1.0</update_rate>
