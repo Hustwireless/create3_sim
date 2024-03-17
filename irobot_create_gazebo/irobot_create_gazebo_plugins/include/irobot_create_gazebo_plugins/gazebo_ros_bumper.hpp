@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <tuple>
+#include <string>
 
 #include "gazebo/common/Assert.hh"
 #include "gazebo/common/Plugin.hh"
@@ -44,6 +45,8 @@ protected:
   void OnUpdate();
 
 private:
+  std::string robot_name_{""};
+
   // Pointer to ros node
   gazebo_ros::Node::SharedPtr ros_node_{nullptr};
 
