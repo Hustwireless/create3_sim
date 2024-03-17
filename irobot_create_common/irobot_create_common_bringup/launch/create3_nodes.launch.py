@@ -6,10 +6,10 @@
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, GroupAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
-from launch_ros.actions import Node
+from launch_ros.actions import Node, SetRemap
 
 ARGUMENTS = [
     DeclareLaunchArgument('gazebo', default_value='classic',
@@ -33,26 +33,30 @@ def generate_launch_description():
     control_launch_file = PathJoinSubstitution(
         [pkg_create3_control, 'launch', 'include', 'control.py'])
     hazards_params_yaml_file = PathJoinSubstitution(
-        [pkg_create3_common_bringup, 'config', 'hazard_vector_params.yaml'])
+        [pkg_create3_common_bringup, 'config', namespace, 'hazard_vector_params.yaml'])
     ir_intensity_params_yaml_file = PathJoinSubstitution(
-        [pkg_create3_common_bringup, 'config', 'ir_intensity_vector_params.yaml'])
+        [pkg_create3_common_bringup, 'config', namespace, 'ir_intensity_vector_params.yaml'])
     wheel_status_params_yaml_file = PathJoinSubstitution(
-        [pkg_create3_common_bringup, 'config', 'wheel_status_params.yaml'])
+        [pkg_create3_common_bringup, 'config', namespace, 'wheel_status_params.yaml'])
     mock_params_yaml_file = PathJoinSubstitution(
-        [pkg_create3_common_bringup, 'config', 'mock_params.yaml'])
+        [pkg_create3_common_bringup, 'config', namespace, 'mock_params.yaml'])
     robot_state_yaml_file = PathJoinSubstitution(
-        [pkg_create3_common_bringup, 'config', 'robot_state_params.yaml'])
+        [pkg_create3_common_bringup, 'config', namespace, 'robot_state_params.yaml'])
     kidnap_estimator_yaml_file = PathJoinSubstitution(
-        [pkg_create3_common_bringup, 'config', 'kidnap_estimator_params.yaml'])
+        [pkg_create3_common_bringup, 'config', namespace, 'kidnap_estimator_params.yaml'])
     ui_mgr_params_yaml_file = PathJoinSubstitution(
-        [pkg_create3_common_bringup, 'config', 'ui_mgr_params.yaml'])
+        [pkg_create3_common_bringup, 'config', namespace, 'ui_mgr_params.yaml'])
 
     # Includes
-    diffdrive_controller = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([control_launch_file]),
-        launch_arguments=[('namespace', LaunchConfiguration('namespace'))]
-
+    diffdrive_controller = GroupAction(
+        actions=[
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([control_launch_file]),
+                launch_arguments=[('namespace', LaunchConfiguration('namespace'))]
+            ),
+        ]
     )
+    
 
     # Publish hazards vector
     hazards_vector_node = Node(
