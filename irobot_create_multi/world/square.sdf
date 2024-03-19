@@ -1,0 +1,90 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <world name="default">
+
+    <!-- A global light source -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- A ground plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- +Y barriers -->
+    <population name="barriers_population">
+      <model name="jersey_barrier_1">
+        <include>
+          <static>true</static>
+          <uri>model://jersey_barrier</uri>
+        </include>
+      </model>
+      <pose>0 19 0.3 0 0 0</pose>
+      <box>
+        <size>40 40 0.01</size>
+      </box>
+      <model_count>5</model_count>
+      <distribution>
+        <type>linear-x</type>
+      </distribution>
+    </population>
+
+    <!-- -Y barriers -->
+    <population name="barriers_population">
+      <model name="jersey_barrier_2">
+        <include>
+          <static>true</static>
+          <uri>model://jersey_barrier</uri>
+        </include>
+      </model>
+      <pose>0 -21.5 0.3 0 0 0</pose>
+      <box>
+        <size>40 40 0.01</size>
+      </box>
+      <model_count>5</model_count>
+      <distribution>
+        <type>linear-x</type>
+      </distribution>
+    </population>
+
+    <!-- +X barriers -->
+    <population name="barriers_population">
+      <model name="jersey_barrier_3">
+        <include>
+          <static>true</static>
+          <uri>model://jersey_barrier</uri>
+          <pose>0 0 0 0 0 1.57</pose>
+        </include>
+      </model>
+      <pose>19 0 0.3 0 0 0</pose>
+      <box>
+        <size>40 40 0.01</size>
+      </box>
+      <model_count>5</model_count>
+      <distribution>
+        <type>linear-y</type>
+      </distribution>
+    </population>
+
+    <!-- -X barriers -->
+    <population name="barriers_population">
+      <model name="jersey_barrier_4">
+        <include>
+          <static>true</static>
+          <uri>model://jersey_barrier</uri>
+          <pose>0 0 0 0 0 1.57</pose>
+        </include>
+      </model>
+      <pose>-21.5 0 0.3 0 0 0</pose>
+      <box>
+        <size>40 40 0.01</size>
+      </box>
+      <model_count>5</model_count>
+      <distribution>
+        <type>linear-y</type>
+      </distribution>
+    </population>
+
+  </world>
+</sdf>
