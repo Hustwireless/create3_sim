@@ -12,6 +12,7 @@ WalkStateMachine::WalkStateMachine(
     rclcpp::Logger logger,
     rclcpp_action::Client<DockAction>::SharedPtr dock_action_client,
     rclcpp_action::Client<UndockAction>::SharedPtr undock_action_client,
+    rclcpp_action::Client<NavAction>::SharedPtr nav_action_client,
     rclcpp::Publisher<TwistMsg>::SharedPtr cmd_vel_publisher,
     bool has_reflexes)
     :  m_logger(logger) 
@@ -24,6 +25,7 @@ WalkStateMachine::WalkStateMachine(
 
     m_dock_action_client = dock_action_client;
     m_undock_action_client = undock_action_client;
+    m_nav_action_client = nav_action_client;
     m_cmd_vel_publisher = cmd_vel_publisher;
 
     m_undocking = false;
@@ -117,8 +119,19 @@ void WalkStateMachine::select_next_behavior(const Behavior::Data& data) {
                 m_walk_output.state = State::FAILURE;
                 break;
             }
-            auto drive_config = DriveStraightBehavior::Config();
-            this->goto_drive_straight(drive_config);
+            // auto drive_config = DriveStraightBehavior::Config();
+            // this->goto_drive_straight(drive_config);
+            this->goto_nav();
+            break;
+        }
+        case FeedbackMsg::NAV: {
+            if (m_behavior_state == State::FAILURE) {
+                m_walk_output.state = State::FAILURE;
+                break;
+            }
+            auto rotate_config = RotateBehavior::Config();
+            rotate_config.target_rotation = M_PI / 4;
+            this->goto_rotate(rotate_config);
             break;
         }
         case FeedbackMsg::UNDOCK: {
@@ -128,9 +141,10 @@ void WalkStateMachine::select_next_behavior(const Behavior::Data& data) {
             }
 
             auto drive_config = DriveStraightBehavior::Config();
-            drive_config.max_distance = 0.25;
-            drive_config.min_distance = 0.25;
-            this->goto_drive_straight(drive_config);
+            // drive_config.max_distance = 0.25;
+            // drive_config.min_distance = 0.25;
+            // this->goto_drive_straight(drive_config);
+            this->goto_nav();
             break;
         }
     }
@@ -204,6 +218,12 @@ void WalkStateMachine::goto_undock()
 {
     m_undocking = true;
     m_current_behavior = std::make_unique<UndockBehavior>(m_undock_action_client, m_logger);
+    m_walk_output.state = State::RUNNING;
+}
+
+void WalkStateMachine::goto_nav()
+{
+    m_current_behavior = std::make_unique<NavBehavior>(m_nav_action_client, m_logger);
     m_walk_output.state = State::RUNNING;
 }
 

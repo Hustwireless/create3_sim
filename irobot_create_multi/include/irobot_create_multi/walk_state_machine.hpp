@@ -5,6 +5,7 @@
 #include "geometry_msgs/msg/twist.hpp"
 #include "irobot_create_msgs/action/dock.hpp"
 #include "irobot_create_msgs/action/undock.hpp"
+#include "irobot_create_msgs/action/navigate_to_position.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "irobot_create_multi/behaviors/behavior.hpp"
@@ -12,6 +13,7 @@
 #include "irobot_create_multi/behaviors/rotate-behavior.hpp"
 #include "irobot_create_multi/behaviors/dock-behavior.hpp"
 #include "irobot_create_multi/behaviors/undock-behavior.hpp"
+#include "irobot_create_multi/behaviors/nav-behavior.hpp"
 
 namespace create3_walk {
 
@@ -19,6 +21,7 @@ class WalkStateMachine {
 public:
     using DockAction = irobot_create_msgs::action::Dock;
     using UndockAction = irobot_create_msgs::action::Undock;
+    using NavAction = irobot_create_msgs::action::NavigateToPosition;
     using TwistMsg = geometry_msgs::msg::Twist;
 
     struct WalkOutput {
@@ -32,6 +35,7 @@ public:
         rclcpp::Logger logger,
         rclcpp_action::Client<DockAction>::SharedPtr dock_action_client,
         rclcpp_action::Client<UndockAction>::SharedPtr undock_action_client,
+        rclcpp_action::Client<NavAction>::SharedPtr nav_action_client,
         rclcpp::Publisher<TwistMsg>::SharedPtr cmd_vel_publisher,
         bool has_reflexes);
     ~WalkStateMachine();
@@ -51,6 +55,7 @@ private:
     void goto_drive_straight(const DriveStraightBehavior::Config& config = DriveStraightBehavior::Config());
     void goto_rotate(const RotateBehavior::Config& config = RotateBehavior::Config());
     void goto_undock();
+    void goto_nav();
 
     double compute_evade_rotation(const geometry_msgs::msg::Pose& pose, double resolution);
 
@@ -69,6 +74,7 @@ private:
 
     rclcpp_action::Client<DockAction>::SharedPtr m_dock_action_client;
     rclcpp_action::Client<UndockAction>::SharedPtr m_undock_action_client;
+    rclcpp_action::Client<NavAction>::SharedPtr m_nav_action_client;
     rclcpp::Publisher<TwistMsg>::SharedPtr m_cmd_vel_publisher;
     rclcpp::Logger m_logger;
     rclcpp::Clock::SharedPtr m_clock;

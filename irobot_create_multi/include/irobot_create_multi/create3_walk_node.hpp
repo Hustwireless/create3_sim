@@ -5,6 +5,7 @@
 #include "create3_walk_msgs/action/walk.hpp"
 #include "irobot_create_msgs/action/dock.hpp"
 #include "irobot_create_msgs/action/undock.hpp"
+#include "irobot_create_msgs/action/navigate_to_position.hpp"
 #include "irobot_create_msgs/msg/dock_status.hpp"
 #include "irobot_create_msgs/msg/hazard_detection_vector.hpp"
 #include "irobot_create_msgs/msg/ir_opcode.hpp"
@@ -26,6 +27,7 @@ private:
 
     using DockAction = irobot_create_msgs::action::Dock;
     using UndockAction = irobot_create_msgs::action::Undock;
+    using NavAction = irobot_create_msgs::action::NavigateToPosition;
     using DockMsg = irobot_create_msgs::msg::DockStatus;
     using HazardMsg = irobot_create_msgs::msg::HazardDetectionVector;
     using KidnapMsg = irobot_create_msgs::msg::KidnapStatus;
@@ -74,6 +76,7 @@ private:
 
     rclcpp_action::Client<DockAction>::SharedPtr m_dock_action_client;
     rclcpp_action::Client<UndockAction>::SharedPtr m_undock_action_client;
+    rclcpp_action::Client<NavAction>::SharedPtr m_nav_action_client;
 
     rclcpp::Publisher<TwistMsg>::SharedPtr m_cmd_vel_publisher;
 

@@ -20,5 +20,6 @@ int32 DRIVE_STRAIGHT = 1
 int32 ROTATE = 2
 int32 SPIRAL = 3
 int32 UNDOCK = 4
+int32 NAV = 5
 
 int32 current_behavior

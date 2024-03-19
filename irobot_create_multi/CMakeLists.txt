@@ -38,6 +38,7 @@ add_library(${library_name} SHARED
     src/behaviors/undock-behavior.cpp
     src/behaviors/utils.cpp
     src/walk_state_machine.cpp
+    src/behaviors/nav-behavior.cpp
 )
 target_include_directories(${library_name} PUBLIC include)
 ament_target_dependencies(${library_name} ${dependencies})

@@ -29,6 +29,13 @@ Create3WalkNode::Create3WalkNode() : rclcpp::Node("create3_walk") {
         this->get_node_waitables_interface(),
         "undock");
 
+    m_nav_action_client = rclcpp_action::create_client<NavAction>(
+        this->get_node_base_interface(),
+        this->get_node_graph_interface(),
+        this->get_node_logging_interface(),
+        this->get_node_waitables_interface(),
+        "navigate_to_position");
+
     m_cmd_vel_publisher = this->create_publisher<TwistMsg>("cmd_vel", 10);
 
     m_reflexes_param_client = std::make_shared<rclcpp::AsyncParametersClient>(
@@ -132,6 +139,7 @@ void Create3WalkNode::execute(const std::shared_ptr<GoalHandleWalk> goal_handle)
         this->get_logger(),
         m_dock_action_client,
         m_undock_action_client,
+        m_nav_action_client,
         m_cmd_vel_publisher,
         robot_has_reflexes);
 
@@ -288,7 +296,8 @@ bool Create3WalkNode::ready_to_start() {
     RCLCPP_INFO(this->get_logger(), "Check parameters servers passed");
 
     if (!m_dock_action_client->action_server_is_ready() ||
-        !m_undock_action_client->action_server_is_ready())
+        !m_undock_action_client->action_server_is_ready() ||
+        !m_nav_action_client->action_server_is_ready())
     {
         RCLCPP_WARN(this->get_logger(), "Some actions servers are not ready yet");
         return false;
