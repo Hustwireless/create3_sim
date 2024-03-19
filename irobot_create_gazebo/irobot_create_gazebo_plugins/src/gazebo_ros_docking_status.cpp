@@ -73,8 +73,8 @@ void GazeboRosDockingStatus::OnUpdate(const gazebo::common::UpdateInfo & info)
   // Check that robot and dock models are spawned
   if (!dock_manager_->AreModelsReady()) {
   // issue caused by probably wrong model names
-  RCLCPP_INFO_STREAM(
-      ros_node_->get_logger(), "standard_dock model is not ready yet");
+    // RCLCPP_INFO_STREAM(
+    //     ros_node_->get_logger(), "standard_dock model is not ready yet");
     RCLCPP_WARN_ONCE(ros_node_->get_logger(), "standard_dock model is not ready yet");
     return;
   }
