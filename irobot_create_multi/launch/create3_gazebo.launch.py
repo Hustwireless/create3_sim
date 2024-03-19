@@ -26,6 +26,9 @@ ARGUMENTS = [
                           description='Set world path, by default is empty.world'),
     DeclareLaunchArgument('namespace', default_value='',
                           description='Robot namespace'),
+    DeclareLaunchArgument('visualize_rays', default_value='false',
+                          choices=['true', 'false'],
+                          description='Enable/disable ray visualization')
 ]
 
 for pose_element in ['x', 'y', 'z', 'yaw']:
@@ -59,7 +62,8 @@ def generate_launch_description():
             ('x', LaunchConfiguration('x')),
             ('y', LaunchConfiguration('y')),
             ('z', LaunchConfiguration('z')),
-            ('yaw', LaunchConfiguration('yaw'))])
+            ('yaw', LaunchConfiguration('yaw')),
+            ('visualize_rays', LaunchConfiguration('visualize_rays'))])
 
     # Define LaunchDescription variable
     ld = LaunchDescription(ARGUMENTS)

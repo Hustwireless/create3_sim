@@ -29,6 +29,9 @@ ARGUMENTS = [
                           description='Spawn the standard dock model.'),
     DeclareLaunchArgument('namespace', default_value='',
                           description='Robot namespace'),
+    DeclareLaunchArgument('visualize_rays', default_value='true',
+                            choices=['true', 'false'],
+                            description='Enable/disable ray visualization'),
 ]
 
 for pose_element in ['x', 'y', 'z', 'yaw']:
@@ -60,6 +63,7 @@ def generate_launch_description():
     yaw = LaunchConfiguration('yaw')
     spawn_dock = LaunchConfiguration('spawn_dock')
     use_rviz = LaunchConfiguration('use_rviz')
+    visualize_rays = LaunchConfiguration('visualize_rays')
 
     robot_name = GetNamespacedName(namespace, 'create3')
     dock_name = GetNamespacedName(namespace, 'standard_dock')
@@ -79,7 +83,7 @@ def generate_launch_description():
         # Dock description
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([dock_description_launch_file]),
-            launch_arguments={'gazebo': 'classic', 'namespace' : namespace}.items(),
+            launch_arguments={'gazebo': 'classic', 'namespace' : namespace, 'visualize_rays' : visualize_rays}.items(),
             condition=IfCondition(spawn_dock),
         ),
 
