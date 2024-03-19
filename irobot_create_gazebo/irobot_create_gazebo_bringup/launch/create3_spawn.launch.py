@@ -79,7 +79,7 @@ def generate_launch_description():
         # Dock description
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([dock_description_launch_file]),
-            launch_arguments={'gazebo': 'classic'}.items(),
+            launch_arguments={'gazebo': 'classic', 'namespace' : namespace}.items(),
             condition=IfCondition(spawn_dock),
         ),
 
@@ -103,7 +103,7 @@ def generate_launch_description():
         # Create 3 robot model and description
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([robot_description_launch_file]),
-            launch_arguments={'gazebo': 'classic'}.items(),
+            launch_arguments={'gazebo': 'classic', 'namespace' : namespace}.items(),
         ),
 
         # Create 3 spawn
