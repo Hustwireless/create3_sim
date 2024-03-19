@@ -278,6 +278,7 @@
         <receiver_link_name>${receiver_link_name}</receiver_link_name>
         <dock_model_name>${dock_model_name}</dock_model_name>
         <emitter_link_name>${emitter_link_name}</emitter_link_name>
+        <namespace>$(arg namespace)</namespace>
       </plugin>
     </gazebo>
   </xacro:if>

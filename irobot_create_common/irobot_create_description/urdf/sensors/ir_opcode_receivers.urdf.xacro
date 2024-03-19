@@ -72,6 +72,7 @@
           <sensor_0_range>${sensor_0_range}</sensor_0_range>
           <sensor_1_fov>${sensor_1_fov}</sensor_1_fov>
           <sensor_1_range>${sensor_1_range}</sensor_1_range>
+          <namespace>${namespace}</namespace>
         </plugin>
       </gazebo>
     </xacro:if>
