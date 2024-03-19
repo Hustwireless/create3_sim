@@ -130,13 +130,13 @@ def generate_launch_description():
             ]
         ),
 
-        # Simple Robot Move
-        Node(
-            package='irobot_create_multi',
-            executable='simple_robot_move',
-            name='simple_robot_move',
-            output='screen',
-        ),
+        # # Simple Robot Move
+        # Node(
+        #     package='irobot_create_multi',
+        #     executable='simple_robot_move',
+        #     name='simple_robot_move',
+        #     output='screen',
+        # ),
 
         # RVIZ2
         IncludeLaunchDescription(
