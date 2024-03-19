@@ -1,6 +1,7 @@
 // Copyright 2021 iRobot Corporation. All Rights Reserved.
 
 #include "irobot_create_multi/behaviors/nav-behavior.hpp"
+#include <random>
 
 namespace create3_walk {
 
@@ -26,9 +27,13 @@ State NavBehavior::execute(const Data & data)
         auto goal_msg = NavAction::Goal();
 
         auto goal_pose = geometry_msgs::msg::PoseStamped();
-        // random number between +- 2.5
-        goal_pose.pose.position.x = 5.0 * (rand() % 2 ? 1 : -1);
-        goal_pose.pose.position.y = 5.0 * (rand() % 2 ? 1 : -1);
+        // Create a random device and use it to seed the random number generator
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        // Create a distribution in the range [-2, 2]
+        std::uniform_real_distribution<> dis(-2, 2);
+        goal_pose.pose.position.x = dis(gen);
+        goal_pose.pose.position.y = dis(gen);
         goal_pose.pose.position.z = 0.0;
 
         // print nav goal
