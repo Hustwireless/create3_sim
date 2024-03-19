@@ -46,6 +46,10 @@ Create3WalkNode::Create3WalkNode() : rclcpp::Node("create3_walk") {
         "motion_control",
         rmw_qos_profile_parameters);
 
+    m_ir_intensity_subscription = this->create_subscription<IrIntensityMsg>(
+        "ir_intensity", rclcpp::SensorDataQoS(),
+        std::bind(&Create3WalkNode::ir_intensity_callback, this, _1));
+
     m_dock_subscription = this->create_subscription<DockMsg>(
         "dock_status", rclcpp::SensorDataQoS(),
         std::bind(&Create3WalkNode::dock_callback, this, _1));
@@ -67,7 +71,7 @@ Create3WalkNode::Create3WalkNode() : rclcpp::Node("create3_walk") {
         std::bind(&Create3WalkNode::kidnap_callback, this, _1));
 
 
-    m_rate_hz = this->declare_parameter<double>("rate_hz", 10.0);
+    m_rate_hz = this->declare_parameter<double>("rate_hz", 30.0);
     m_opcodes_buffer_ms = this->declare_parameter<int>("opcodes_buffer_ms", 200);
 
     m_dock_msgs_received = false;
@@ -157,6 +161,7 @@ void Create3WalkNode::execute(const std::shared_ptr<GoalHandleWalk> goal_handle)
             data.dock = m_last_dock;
             data.opcodes = m_last_opcodes;
             data.pose = m_last_odom.pose.pose;
+            data.ir_intensity = m_last_ir_intensity;
             
             if (this->now() - m_last_opcodes_cleared_time 
                 >= rclcpp::Duration(std::chrono::milliseconds(m_opcodes_buffer_ms))){
@@ -344,5 +349,12 @@ void Create3WalkNode::odom_callback(OdometryMsg::ConstSharedPtr msg)
     std::lock_guard<std::mutex> guard(m_mutex);
     m_last_odom = *msg;
 }
+
+void Create3WalkNode::ir_intensity_callback(IrIntensityMsg::ConstSharedPtr msg)
+{
+    std::lock_guard<std::mutex> guard(m_mutex);
+    m_last_ir_intensity = *msg;
+}
+
 
 }  // namespace create3_walk

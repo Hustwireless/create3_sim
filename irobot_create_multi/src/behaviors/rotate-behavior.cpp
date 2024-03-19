@@ -22,6 +22,8 @@ RotateBehavior::RotateBehavior(
     m_first_run = false;
     m_start_time = m_clock->now();
     m_hazards_count = 0;
+
+    RCLCPP_INFO(m_logger, "RotateBehavior created");
 }
 
 State RotateBehavior::execute(const Data & data)

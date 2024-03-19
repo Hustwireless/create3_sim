@@ -10,6 +10,7 @@
 #include "irobot_create_msgs/msg/hazard_detection_vector.hpp"
 #include "irobot_create_msgs/msg/ir_opcode.hpp"
 #include "irobot_create_msgs/msg/kidnap_status.hpp"
+#include "irobot_create_msgs/msg/ir_intensity_vector.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "nav_msgs/msg/odometry.hpp"
@@ -34,6 +35,7 @@ private:
     using OdometryMsg = nav_msgs::msg::Odometry;
     using OpCodeMsg = irobot_create_msgs::msg::IrOpcode;
     using TwistMsg = geometry_msgs::msg::Twist;
+    using IrIntensityMsg = irobot_create_msgs::msg::IrIntensityVector;
 
 
     rclcpp_action::GoalResponse handle_goal(
@@ -52,6 +54,7 @@ private:
     void ir_opcode_callback(OpCodeMsg::ConstSharedPtr msg);
     void kidnap_callback(KidnapMsg::ConstSharedPtr msg);
     void odom_callback(OdometryMsg::ConstSharedPtr msg);
+    void ir_intensity_callback(IrIntensityMsg::ConstSharedPtr msg);
 
     bool ready_to_start();
     bool reflexes_setup();
@@ -71,6 +74,7 @@ private:
     OdometryMsg m_last_odom;
     std::vector<OpCodeMsg> m_last_opcodes;
     rclcpp::Time m_last_opcodes_cleared_time;
+    IrIntensityMsg m_last_ir_intensity;
 
     rclcpp_action::Server<WalkAction>::SharedPtr m_walk_action_server;
 
@@ -87,5 +91,6 @@ private:
     rclcpp::Subscription<KidnapMsg>::SharedPtr m_kidnap_subscription;
     rclcpp::Subscription<OdometryMsg>::SharedPtr m_odom_subscription;
     rclcpp::Subscription<OpCodeMsg>::SharedPtr m_ir_opcode_subscription;
+    rclcpp::Subscription<IrIntensityMsg>::SharedPtr m_ir_intensity_subscription;
 };
 }  // namespace create3_walk

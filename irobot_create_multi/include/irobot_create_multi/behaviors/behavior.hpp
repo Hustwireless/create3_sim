@@ -9,6 +9,7 @@
 #include "irobot_create_msgs/msg/dock_status.hpp"
 #include "irobot_create_msgs/msg/hazard_detection_vector.hpp"
 #include "irobot_create_msgs/msg/ir_opcode.hpp"
+#include "irobot_create_msgs/msg/ir_intensity_vector.hpp"
 
 namespace create3_walk {
 
@@ -20,6 +21,7 @@ public:
         irobot_create_msgs::msg::HazardDetectionVector hazards;
         irobot_create_msgs::msg::DockStatus dock;
         std::vector<irobot_create_msgs::msg::IrOpcode> opcodes;
+        irobot_create_msgs::msg::IrIntensityVector ir_intensity;
     };
 
     Behavior() = default;

@@ -30,6 +30,7 @@ WalkStateMachine::WalkStateMachine(
 
     m_undocking = false;
     m_preparing_spiral = false;
+    m_detected_obstacle = false;
 }     
 
 WalkStateMachine::~WalkStateMachine() {
@@ -105,8 +106,38 @@ void WalkStateMachine::select_next_behavior(const Behavior::Data& data) {
             this->goto_nav();
             break;
         }
+        case FeedbackMsg::ESTOP: {
+            auto rotate_config = RotateBehavior::Config();
+            rotate_config.robot_has_reflexes = m_has_reflexes;
+            if (m_behavior_state == State::FAILURE) {
+                m_walk_output.state = State::FAILURE;
+                break;
+            }
+            if (!m_detected_obstacle) {
+                this->goto_rotate(rotate_config);
+                break;
+            }
+            m_detected_obstacle = false;
+            if (detected_obstacle(data.ir_intensity)) {
+                double rot_angle = decide_rotation_angle(data.ir_intensity);
+                rotate_config.target_rotation = rot_angle;
+                this->goto_rotate(rotate_config);
+            } else {
+                this->goto_nav();
+            }
+            break;
+        }
         case FeedbackMsg::NAV: {
             auto rotate_config = RotateBehavior::Config();
+            if (detected_obstacle(data.ir_intensity)) {
+                RCLCPP_INFO(m_logger, "Detected obstacle, estop && backward to avoid it.");
+                m_detected_obstacle = true;
+                auto estop_config = EstopBehavior::Config();
+                estop_config.backup_distance = 0.1;
+                estop_config.linear_vel = 0.1;
+                this->goto_estop(estop_config);
+                break;
+            }
             if (m_behavior_state == State::FAILURE) {
                 if (m_evade_attempts.size() > 20) {
                     m_walk_output.state = State::FAILURE;
@@ -118,7 +149,7 @@ void WalkStateMachine::select_next_behavior(const Behavior::Data& data) {
                 m_evade_attempts.clear();
             }
             rotate_config.robot_has_reflexes = m_has_reflexes;
-            rotate_config.target_rotation = M_PI / 2.0;
+            rotate_config.target_rotation = M_PI / 4.0;
             this->goto_rotate(rotate_config);
             break;
         }
@@ -132,6 +163,42 @@ void WalkStateMachine::select_next_behavior(const Behavior::Data& data) {
             break;
         }
     }
+}
+
+bool WalkStateMachine::frameContains(const std::string& frame_id, const std::string& keyword) {
+    return frame_id.find(keyword) != std::string::npos;
+}
+
+double WalkStateMachine::decide_rotation_angle(const irobot_create_msgs::msg::IrIntensityVector& ir_intensity) {
+    RCLCPP_INFO(m_logger, "Deciding rotation angle");
+    for (int i=0; i<7; i++) {
+        int intensity = ir_intensity.readings[i].value;
+        std::string frame_id = ir_intensity.readings[i].header.frame_id;
+        if (intensity> 30) {
+            if (frameContains(frame_id, "front")) {
+                return M_PI / 2.0;
+            } 
+            if (frameContains(frame_id, "left")) {
+                return M_PI / 4.0;
+            } else if (frameContains(frame_id, "right")) {
+                return -M_PI / 4.0;
+            }
+        }
+    }
+    return 0.0;
+}
+
+bool WalkStateMachine::detected_obstacle(const irobot_create_msgs::msg::IrIntensityVector& ir_intensity) {
+    RCLCPP_INFO(m_logger, "Detecting obstacle");
+    for (int i=0; i<7; i++) {
+        int intensity = ir_intensity.readings[i].value;
+        std::string frame_id = ir_intensity.readings[i].header.frame_id;
+        RCLCPP_INFO(m_logger, "IR intensity %s: %d", frame_id.c_str(), intensity);
+        if (intensity > 20) {
+            return true;
+        }
+    }
+    return false;
 }
 
 double WalkStateMachine::compute_evade_rotation(const geometry_msgs::msg::Pose& pose, double resolution)
@@ -208,6 +275,12 @@ void WalkStateMachine::goto_undock()
 void WalkStateMachine::goto_nav()
 {
     m_current_behavior = std::make_unique<NavBehavior>(m_nav_action_client, m_logger);
+    m_walk_output.state = State::RUNNING;
+}
+
+void WalkStateMachine::goto_estop(const EstopBehavior::Config& config)
+{
+    m_current_behavior = std::make_unique<EstopBehavior>(config, m_cmd_vel_publisher, m_logger, m_clock);
     m_walk_output.state = State::RUNNING;
 }
 

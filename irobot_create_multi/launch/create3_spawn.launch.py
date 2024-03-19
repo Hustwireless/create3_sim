@@ -29,7 +29,7 @@ ARGUMENTS = [
                           description='Spawn the standard dock model.'),
     DeclareLaunchArgument('namespace', default_value='',
                           description='Robot namespace'),
-    DeclareLaunchArgument('visualize_rays', default_value='true',
+    DeclareLaunchArgument('visualize_rays', default_value='false',
                             choices=['true', 'false'],
                             description='Enable/disable ray visualization'),
 ]

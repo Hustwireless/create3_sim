@@ -14,6 +14,7 @@
 #include "irobot_create_multi/behaviors/dock-behavior.hpp"
 #include "irobot_create_multi/behaviors/undock-behavior.hpp"
 #include "irobot_create_multi/behaviors/nav-behavior.hpp"
+#include "irobot_create_multi/behaviors/estop-behavior.hpp"
 
 namespace create3_walk {
 
@@ -56,8 +57,12 @@ private:
     void goto_rotate(const RotateBehavior::Config& config = RotateBehavior::Config());
     void goto_undock();
     void goto_nav();
+    void goto_estop(const EstopBehavior::Config& config = EstopBehavior::Config());
 
     double compute_evade_rotation(const geometry_msgs::msg::Pose& pose, double resolution);
+    bool detected_obstacle(const irobot_create_msgs::msg::IrIntensityVector& ir_intensity);
+    double decide_rotation_angle(const irobot_create_msgs::msg::IrIntensityVector& ir_intensity);
+    bool frameContains(const std::string& frame_id, const std::string& keyword);
 
     std::shared_ptr<Behavior> m_current_behavior;
     State m_behavior_state;
@@ -71,6 +76,7 @@ private:
     create3_walk_msgs::action::Walk::Goal m_goal;
     rclcpp::Time m_start_time;
     bool m_has_reflexes;
+    bool m_detected_obstacle;
 
     rclcpp_action::Client<DockAction>::SharedPtr m_dock_action_client;
     rclcpp_action::Client<UndockAction>::SharedPtr m_undock_action_client;

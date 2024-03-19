@@ -10,13 +10,14 @@ NavBehavior::NavBehavior(
     rclcpp::Logger logger)
 : m_nav_action_client(nav_action_client), m_logger(logger)
 {
+    RCLCPP_INFO(m_logger, "Initializing NavBehavior");
 }
 
 State NavBehavior::execute(const Data & data)
 {
     // We can't undock until we discover the nav action server
     if (!m_nav_action_client->action_server_is_ready()) {
-        RCLCPP_DEBUG(m_logger, "Waiting for nav action server");
+        RCLCPP_INFO(m_logger, "Waiting for nav action server");
         return State::RUNNING;
     }
 
@@ -30,15 +31,16 @@ State NavBehavior::execute(const Data & data)
         std::random_device rd;
         std::mt19937 gen(rd());
         // Create a distribution in the range [-2, 2]
-        std::uniform_real_distribution<> dis(-2, 2);
+        std::uniform_real_distribution<> dis(-1.5, 1.5);
         goal_pose.pose.position.x = dis(gen);
         goal_pose.pose.position.y = dis(gen);
         goal_pose.pose.position.z = 0.0;
-
         // print nav goal
         RCLCPP_INFO(m_logger, "Nav goal: x: %f, y: %f", goal_pose.pose.position.x, goal_pose.pose.position.y);
-        
+
         goal_msg.goal_pose = goal_pose;
+        double max_translation_speed = 0.06;
+        goal_msg.max_translation_speed = max_translation_speed;
 
         auto send_goal_options = rclcpp_action::Client<NavAction>::SendGoalOptions();
         send_goal_options.goal_response_callback = [this](const GoalHandleNav::SharedPtr & goal_handle){
