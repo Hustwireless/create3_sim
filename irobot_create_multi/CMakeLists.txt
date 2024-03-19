@@ -8,7 +8,16 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_action REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(irobot_create_msgs REQUIRED)
+
+set(dependencies
+    geometry_msgs
+    irobot_create_msgs
+    rclcpp
+    rclcpp_action
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -27,9 +36,17 @@ include_directories(include)
 add_executable(simple_robot_move src/simple_robot_move.cpp src/simple_robot_move_node.cpp)
 ament_target_dependencies(simple_robot_move rclcpp geometry_msgs)
 
+add_executable(simple_undock_node src/undock_behavior.cpp)
+ament_target_dependencies(simple_undock_node ${dependencies})
+
 install(TARGETS
   simple_robot_move
+  simple_undock_node
   DESTINATION lib/${PROJECT_NAME}
+)
+
+install(DIRECTORY include/
+    DESTINATION include/
 )
 
 install(
