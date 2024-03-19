@@ -10,7 +10,6 @@ NavBehavior::NavBehavior(
     rclcpp::Logger logger)
 : m_nav_action_client(nav_action_client), m_logger(logger)
 {
-
 }
 
 State NavBehavior::execute(const Data & data)

@@ -66,7 +66,7 @@ void WalkStateMachine::select_start_behavior(const Behavior::Data& data) {
     if (data.dock.is_docked) {
            this->goto_undock();
     } else {
-        this->goto_drive_straight();
+        this->goto_nav();
     }
 }
 
@@ -97,40 +97,28 @@ void WalkStateMachine::select_next_behavior(const Behavior::Data& data) {
             m_walk_output.state = State::SUCCESS;
             return;
         }
-        case FeedbackMsg::DRIVE_STRAIGHT: {
+        case FeedbackMsg::ROTATE: {
+            if (m_behavior_state == State::FAILURE) {
+                m_walk_output.state = State::FAILURE;
+                break;
+            }
+            this->goto_nav();
+            break;
+        }
+        case FeedbackMsg::NAV: {
             auto rotate_config = RotateBehavior::Config();
             if (m_behavior_state == State::FAILURE) {
                 if (m_evade_attempts.size() > 20) {
                     m_walk_output.state = State::FAILURE;
                     break;
                 }
-
                 constexpr double evade_resolution = 0.175433;
                 rotate_config.target_rotation = compute_evade_rotation(data.pose, evade_resolution);
             } else {
                 m_evade_attempts.clear();
             }
             rotate_config.robot_has_reflexes = m_has_reflexes;
-            this->goto_rotate(rotate_config);
-            break;
-        }
-        case FeedbackMsg::ROTATE: {
-            if (m_behavior_state == State::FAILURE) {
-                m_walk_output.state = State::FAILURE;
-                break;
-            }
-            // auto drive_config = DriveStraightBehavior::Config();
-            // this->goto_drive_straight(drive_config);
-            this->goto_nav();
-            break;
-        }
-        case FeedbackMsg::NAV: {
-            if (m_behavior_state == State::FAILURE) {
-                m_walk_output.state = State::FAILURE;
-                break;
-            }
-            auto rotate_config = RotateBehavior::Config();
-            rotate_config.target_rotation = M_PI / 4;
+            rotate_config.target_rotation = M_PI / 2.0;
             this->goto_rotate(rotate_config);
             break;
         }
@@ -139,11 +127,7 @@ void WalkStateMachine::select_next_behavior(const Behavior::Data& data) {
                 m_walk_output.state = State::FAILURE;
                 break;
             }
-
             auto drive_config = DriveStraightBehavior::Config();
-            // drive_config.max_distance = 0.25;
-            // drive_config.min_distance = 0.25;
-            // this->goto_drive_straight(drive_config);
             this->goto_nav();
             break;
         }
