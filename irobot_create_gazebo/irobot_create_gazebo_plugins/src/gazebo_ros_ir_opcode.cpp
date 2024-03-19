@@ -29,6 +29,7 @@ void GazeboRosIrOpcode::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sd
   std::string receiver_link_name{""};
   std::string dock_model_name{""};
   std::string emitter_link_name{""};
+  std::string namespace_{""};
   double sensor_0_fov{1.0};
   double sensor_0_range{1.0};
   double sensor_1_fov{1.0};
@@ -40,6 +41,7 @@ void GazeboRosIrOpcode::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sd
   utils::initialize(receiver_link_name, sdf, "receiver_link_name", "");
   utils::initialize(dock_model_name, sdf, "dock_model_name", "");
   utils::initialize(emitter_link_name, sdf, "emitter_link_name", "");
+  utils::initialize(namespace_, sdf, "namespace", "");
   utils::initialize(sensor_0_fov, sdf, "sensor_0_fov", 1.0);
   utils::initialize(sensor_0_range, sdf, "sensor_0_range", 1.0);
   utils::initialize(sensor_1_fov, sdf, "sensor_1_fov", 1.0);
@@ -51,7 +53,7 @@ void GazeboRosIrOpcode::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sd
     sensor_1_fov, sensor_1_range};
 
   dock_manager_ = std::make_shared<DockingManager>(
-    world_, robot_model_name, receiver_link_name,
+    world_, namespace_, robot_model_name, receiver_link_name,
     dock_model_name, emitter_link_name);
 
   // Initialize ROS publisher

@@ -28,6 +28,7 @@ void GazeboRosDockingStatus::Load(gazebo::physics::ModelPtr model, sdf::ElementP
   std::string receiver_link_name{""};
   std::string dock_model_name{""};
   std::string emitter_link_name{""};
+  std::string namespace_{""};
 
   // Get plugin parameters
   utils::initialize(update_rate, sdf, "update_rate", 1.0);
@@ -35,10 +36,11 @@ void GazeboRosDockingStatus::Load(gazebo::physics::ModelPtr model, sdf::ElementP
   utils::initialize(receiver_link_name, sdf, "receiver_link_name", "");
   utils::initialize(dock_model_name, sdf, "dock_model_name", "");
   utils::initialize(emitter_link_name, sdf, "emitter_link_name", "");
+  utils::initialize(namespace_, sdf, "namespace", "");
 
   // Used to determine if robot is docked or not
   dock_manager_ = std::make_shared<DockingManager>(
-    world_, robot_model_name, receiver_link_name,
+    world_, namespace_, robot_model_name, receiver_link_name,
     dock_model_name, emitter_link_name);
 
   // Initialize ROS publisher
@@ -63,13 +65,16 @@ void GazeboRosDockingStatus::Load(gazebo::physics::ModelPtr model, sdf::ElementP
   last_pub_time_ = world_->SimTime();
   last_visible_update_time_ = world_->SimTime();
 
-  RCLCPP_INFO(ros_node_->get_logger(), "Starting ir opcode plugin");
+  RCLCPP_INFO(ros_node_->get_logger(), "Starting docking status plugin");
 }
 
 void GazeboRosDockingStatus::OnUpdate(const gazebo::common::UpdateInfo & info)
 {
   // Check that robot and dock models are spawned
   if (!dock_manager_->AreModelsReady()) {
+  // issue caused by probably wrong model names
+  RCLCPP_INFO_STREAM(
+      ros_node_->get_logger(), "standard_dock model is not ready yet");
     RCLCPP_WARN_ONCE(ros_node_->get_logger(), "standard_dock model is not ready yet");
     return;
   }

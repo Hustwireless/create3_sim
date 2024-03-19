@@ -7,10 +7,10 @@
 namespace irobot_create_gazebo_plugins
 {
 DockingManager::DockingManager(
-  const gazebo::physics::WorldPtr & world, const std::string & robot_name,
+  const gazebo::physics::WorldPtr & world, const std::string & ns, const std::string & robot_name,
   const std::string & receiver_link_name,
   const std::string & dock_name, const std::string & emitter_link_name)
-: world_{world}, robot_model_name_{robot_name}, robot_receiver_link_name_{receiver_link_name},
+: world_{world}, namespace_{ns}, robot_model_name_{robot_name}, robot_receiver_link_name_{receiver_link_name},
   dock_model_name_{dock_name}, dock_emitter_link_name_{emitter_link_name}
 {
 }
@@ -29,8 +29,17 @@ void DockingManager::initLinks(
 
 bool DockingManager::AreModelsReady()
 {
-  const gazebo::physics::ModelPtr dock_model = world_->ModelByName(dock_model_name_);
-  const gazebo::physics::ModelPtr robot_model = world_->ModelByName(robot_model_name_);
+  //   // Get the models in the world
+  // auto models = world_->Models();
+
+  // // Iterate through the vector of models
+  // for (const auto& model : models) {
+  //   // Print the model name
+  //   std::cout << "Model Name: " << model->GetName() << std::endl;
+  // }
+
+  const gazebo::physics::ModelPtr dock_model = world_->ModelByName(namespace_+"/"+dock_model_name_);
+  const gazebo::physics::ModelPtr robot_model = world_->ModelByName(namespace_+"/"+robot_model_name_);
   const bool models_ready = dock_model != nullptr && robot_model != nullptr;
   if (models_ready && (receiver_link_ == nullptr || emitter_link_ == nullptr)) {
     initLinks(dock_model, robot_model);

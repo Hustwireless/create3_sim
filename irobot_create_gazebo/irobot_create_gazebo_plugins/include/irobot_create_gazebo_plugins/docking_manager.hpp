@@ -28,6 +28,7 @@ private:
   // World pointer
   gazebo::physics::WorldPtr world_{nullptr};
   // Model and their respective link names
+  std::string namespace_;
   std::string robot_model_name_;
   std::string robot_receiver_link_name_;
   std::string dock_model_name_;
@@ -40,7 +41,7 @@ private:
 public:
   /// Constructor
   DockingManager(
-    const gazebo::physics::WorldPtr & world, const std::string & robot_name,
+    const gazebo::physics::WorldPtr & world, const std::string & namespace_, const std::string & robot_name,
     const std::string & receiver_link_name,
     const std::string & dock_name, const std::string & emitter_link_name);
 
