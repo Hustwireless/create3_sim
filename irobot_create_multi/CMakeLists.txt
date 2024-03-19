@@ -8,6 +8,7 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -20,5 +21,23 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
+
+include_directories(include)
+
+add_executable(simple_robot_move src/simple_robot_move.cpp src/simple_robot_move_node.cpp)
+ament_target_dependencies(simple_robot_move rclcpp geometry_msgs)
+
+install(TARGETS
+  simple_robot_move
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(
+  DIRECTORY
+    config
+    launch
+  DESTINATION
+    share/${PROJECT_NAME}
+)
 
 ament_package()
