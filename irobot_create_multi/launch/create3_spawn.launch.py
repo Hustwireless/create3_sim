@@ -134,19 +134,19 @@ def generate_launch_description():
             ]
         ),
 
-        # # Simple Robot Move
-        # Node(
-        #     package='irobot_create_multi',
-        #     executable='simple_robot_move',
-        #     name='simple_robot_move',
-        #     output='screen',
-        # ),
+        # Robot Walk server
+        Node(
+            package='irobot_create_multi',
+            executable='create3_walk',
+            name='create3_walk',
+            output='screen',
+        ),
 
         # RVIZ2
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([rviz2_launch_file]),
-            condition=IfCondition(use_rviz),
-        ),
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource([rviz2_launch_file]),
+        #     condition=IfCondition(use_rviz),
+        # ),
     ])
 
     # Define LaunchDescription variable
